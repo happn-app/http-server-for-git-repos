@@ -1,0 +1,11 @@
+= http-server-for-git-repos
+François Lamboley <francois.lamboley@happn.com>
+
+Serve the files in your git repositories via HTTP.
+
+== Why?
+The need for this project has arisen when we wanted a private Helm repository under
+git. Most solutions for Helm repositories either rely on being public and thus being
+able to be served as GitHub Pages, or not being under git.
+
+I wanted a private Helm repository under git, hence this project.
