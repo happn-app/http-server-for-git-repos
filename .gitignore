@@ -5,3 +5,6 @@
 /.build/
 /.swiftpm/
 /Packages/
+
+# Other
+/.env
