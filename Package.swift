@@ -9,12 +9,14 @@ let package = Package(
 	],
 	dependencies: [
 		.package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
+		.package(url: "https://github.com/MrLotU/SwiftPrometheus.git", from: "1.0.0-alpha"),
 		.package(url: "https://github.com/kareman/SwiftShell", from: "5.1.0")
 	],
 	targets: [
 		.target(
 			name: "App",
 			dependencies: [
+				.product(name: "SwiftPrometheus", package: "SwiftPrometheus"),
 				.product(name: "SwiftShell", package: "SwiftShell"),
 				.product(name: "Vapor", package: "vapor")
 			],

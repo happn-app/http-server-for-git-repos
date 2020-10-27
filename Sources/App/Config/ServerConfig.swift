@@ -17,9 +17,18 @@ public struct ServerConfig : Decodable {
 		public var gitRef: String
 		public var credentialName: String?
 		
-		public var endpointPath: String?
+		/**
+		The relative path of the repository (where the repo is stored locally and
+		served on the server).
 		
-		public var relativeLocalPath: String?
+		Must be a relative path (must not start with slash).
+		
+		If there are more than one path components, the parent folder must exist,
+		otherwise the clones will fail.
+		
+		The `/_healthz` and `/_metrics` endpoints are reserved so the repo cannot
+		be in these folders. */
+		public var relativePath: String?
 		
 	}
 	
@@ -76,11 +85,7 @@ public struct ServerConfig : Decodable {
 	}
 	
 	public func localURL(for repo: Repo) -> URL {
-		return URL(fileURLWithPath: repo.relativeLocalPath ?? repo.url.deletingPathExtension().lastPathComponent, relativeTo: baseReposFolderURL)
-	}
-	
-	public func endpointPath(for repo: Repo) -> String {
-		return repo.endpointPath ?? "/" + repo.url.deletingPathExtension().lastPathComponent
+		return URL(fileURLWithPath: repo.relativePath ?? repo.url.deletingPathExtension().lastPathComponent, relativeTo: baseReposFolderURL)
 	}
 	
 }

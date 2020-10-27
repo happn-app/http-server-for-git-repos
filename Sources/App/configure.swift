@@ -1,3 +1,7 @@
+import Foundation
+
+import Metrics
+import Prometheus
 import Vapor
 
 
@@ -9,6 +13,9 @@ public func configure(_ app: Application) throws {
 	let configReader = JSONDecoder()
 	configReader.keyDecodingStrategy = .convertFromSnakeCase
 	app.config = try configReader.decode(ServerConfig.self, from: Data(contentsOf: URL(fileURLWithPath: configPath)))
+	
+	/* Bootstrap prom for the metrics */
+	MetricsSystem.bootstrap(PrometheusClient())
 	
 	app.repoUpdater = RepoUpdater()
 	
