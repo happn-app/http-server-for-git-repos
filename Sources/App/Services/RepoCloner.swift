@@ -42,7 +42,7 @@ final class RepoCloner {
 				}
 			}
 			
-			if FileManager.default.fileExists(atPath: repoURL.path) {
+			if FileManager.default.fileExists(atPath: repoURL.path) && FileManager.default.enumerator(atPath: repoURL.path)?.nextObject() != nil {
 				/* A file or folder already exists at repo local path. We assume it
 				 * is a previous clone of the repo and we just fetch. */
 				app.gitQueue.async{
