@@ -20,9 +20,7 @@ public func configure(_ app: Application) throws {
 	app.warmUpStorage(app)
 	
 	/* Config is done, we start the repos updater. */
-	/* TODO: For now we only clone once. */
-	let repoCloner = RepoCloner()
-	_ = EventLoopFuture.reduce((), app.config.repos.map{ repoCloner.cloneOrUpdateRepo($0, app: app) }, on: app.eventLoopGroup.next(), { _,_ in })
+	_ = app.repoUpdater.startScheduledUpdates(app)
 		.always{ _ in
 			app.firstCloneDone = true
 		}
