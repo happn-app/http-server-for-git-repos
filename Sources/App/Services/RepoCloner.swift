@@ -15,13 +15,13 @@ import SwiftShell
 
 final class RepoCloner {
 	
-	func cloneRepo(_ repo: ServerConfig.Repo, app: Application, req: Request? = nil) -> EventLoopFuture<Void> {
+	func cloneOrUpdateRepo(_ repo: ServerConfig.Repo, app: Application, req: Request? = nil) -> EventLoopFuture<Void> {
 		let config = app.config
 		let logger = req?.logger ?? app.logger
 		let eventLoop = req?.eventLoop ?? app.eventLoopGroup.next()
 		
 		let repoURL = config.localURL(for: repo)
-		logger.info("Cloning \(repo.url) in \(repoURL)")
+		logger.info("Cloning or updating \(repo.url) in \(repoURL)")
 		
 		let promise = eventLoop.makePromise(of: Void.self)
 		do {

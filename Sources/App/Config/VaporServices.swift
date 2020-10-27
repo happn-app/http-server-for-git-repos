@@ -22,6 +22,15 @@ extension Application {
 		typealias Value = ServerConfig
 	}
 	
+	var firstCloneSucceeded: Bool? {
+		get {storage[FirstCloneSucceededKey.self]}
+		set {storage[FirstCloneSucceededKey.self] = newValue}
+	}
+	
+	private struct FirstCloneSucceededKey: StorageKey {
+		typealias Value = Bool
+	}
+	
 	var gitQueue: DispatchQueue {
 		if let existing = storage[GitQueueKey.self] {
 			return existing
