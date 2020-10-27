@@ -76,7 +76,7 @@ public struct ServerConfig : Decodable {
 	}
 	
 	public func localURL(for repo: Repo) -> URL {
-		return URL(fileURLWithPath: repo.relativeLocalPath ?? repo.url.lastPathComponent, relativeTo: baseReposFolderURL)
+		return URL(fileURLWithPath: repo.relativeLocalPath ?? repo.url.deletingPathExtension().lastPathComponent, relativeTo: baseReposFolderURL)
 	}
 	
 }
