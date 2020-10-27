@@ -21,11 +21,8 @@ public func configure(_ app: Application) throws {
 	/* TODO: For now we only clone once. */
 	let repoCloner = RepoCloner()
 	_ = EventLoopFuture.reduce((), app.config.repos.map{ repoCloner.cloneOrUpdateRepo($0, app: app) }, on: app.eventLoopGroup.next(), { _,_ in })
-		.always{ result in
-			switch result {
-				case .success: app.firstCloneSucceeded = true
-				case .failure: app.firstCloneSucceeded = false
-			}
+		.always{ _ in
+			app.firstCloneDone = true
 		}
 }
 

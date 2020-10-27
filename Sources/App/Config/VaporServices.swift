@@ -22,8 +22,8 @@ extension Application {
 		typealias Value = ServerConfig
 	}
 	
-	var firstCloneSucceeded: Bool? {
-		get {storage[FirstCloneSucceededKey.self]}
+	var firstCloneDone: Bool {
+		get {storage[FirstCloneSucceededKey.self] ?? false}
 		set {storage[FirstCloneSucceededKey.self] = newValue}
 	}
 	
