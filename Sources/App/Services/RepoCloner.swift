@@ -8,6 +8,7 @@
 import Foundation
 
 import NIO
+import Metrics
 import Vapor
 import SwiftShell
 
@@ -23,6 +24,7 @@ final class RepoCloner {
 		let localRepoPath = config.localURL(for: repo).path
 		logger.info("Cloning or updating \(repo.url) in \(localRepoPath)")
 		
+		let startTime = DispatchTime.now()
 		let promise = eventLoop.makePromise(of: Void.self)
 		do {
 			var context = CustomContext()
@@ -51,8 +53,7 @@ final class RepoCloner {
 						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "-C", localRepoPath, "fetch", "-pf", "origin").error ??
 						self.updateLocalRepoBranch(localRepoPath, gitRef: repo.gitRef, context: context, logger: logger)
 					)
-					if let err = err {self.failPromiseAndLog(repoURL: repo.url, promise: promise, error: err, logger: logger)}
-					else             {promise.succeed(())}
+					self.endPromiseAndLog(repoURL: repo.url, promise: promise, error: err, startTime: startTime, logger: logger)
 				}
 			} else {
 				/* No file or folder at repo local path. We must clone the repo. */
@@ -61,12 +62,11 @@ final class RepoCloner {
 						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "clone", "--origin", "origin", repo.url, localRepoPath).error ??
 						self.updateLocalRepoBranch(localRepoPath, gitRef: repo.gitRef, context: context, logger: logger)
 					)
-					if let err = err {self.failPromiseAndLog(repoURL: repo.url, promise: promise, error: err, logger: logger)}
-					else             {promise.succeed(())}
+					self.endPromiseAndLog(repoURL: repo.url, promise: promise, error: err, startTime: startTime, logger: logger)
 				}
 			}
 		} catch {
-			failPromiseAndLog(repoURL: repo.url, promise: promise, error: error, logger: logger)
+			endPromiseAndLog(repoURL: repo.url, promise: promise, error: error, startTime: startTime, logger: logger)
 		}
 		return promise.futureResult
 	}
@@ -92,9 +92,23 @@ final class RepoCloner {
 		return res
 	}
 	
-	private func failPromiseAndLog(repoURL: URL, promise: EventLoopPromise<Void>, error: Error, logger: Logger) {
-		logger.error("Error while updating repo “\(repoURL)”: \(error)")
-		promise.fail(error)
+	private func endPromiseAndLog(repoURL: URL, promise: EventLoopPromise<Void>, error: Error?, startTime: DispatchTime, logger: Logger) {
+		let dimensions = [("repo_url", repoURL.absoluteString)]
+		Timer(
+			label: "repo_clone_duration_seconds",
+			dimensions: dimensions,
+			preferredDisplayUnit: .seconds
+		).recordNanoseconds(DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds)
+		
+		Counter(label: "repo_clone_total", dimensions: dimensions).increment()
+		
+		if let error = error {
+			Counter(label: "repo_clone_errors_total", dimensions: dimensions).increment()
+			logger.error("Error while updating repo “\(repoURL)”: \(error)")
+			promise.fail(error)
+		} else {
+			promise.succeed(())
+		}
 	}
 	
 }
