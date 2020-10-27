@@ -17,7 +17,7 @@ public struct ServerConfig : Decodable {
 		public var gitRef: String
 		public var credentialName: String?
 		
-		public var endpointPath: String
+		public var endpointPath: String?
 		
 		public var relativeLocalPath: String?
 		
