@@ -38,7 +38,7 @@ final class RepoCloner {
 						guard path.rangeOfCharacter(from: allowedChars.inverted) == nil else {
 							throw SimpleError(message: "Invalid config for cred “\(credName)”: The path to the SSH key contains an invalid char.")
 						}
-						context.env["GIT_SSH_COMMAND"] = "ssh -o IdentitiesOnly=yes -i '\(path)' -F /dev/null"
+						context.env["GIT_SSH_COMMAND"] = "ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i '\(path)' -F /dev/null"
 				}
 			}
 			
