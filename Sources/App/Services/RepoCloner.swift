@@ -47,7 +47,8 @@ final class RepoCloner {
 				 * is a previous clone of the repo and we just fetch. */
 				app.gitQueue.async{
 					let err = (
-						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "-C", localRepoPath, "fetch", "-pPtf", "origin").error ??
+						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "-C", localRepoPath, "remote", "set-url", "origin", repo.url).error ??
+						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "-C", localRepoPath, "fetch", "-pf", "origin").error ??
 						self.updateLocalRepoBranch(localRepoPath, gitRef: repo.gitRef, context: context, logger: logger)
 					)
 					if let err = err {self.failPromiseAndLog(repoURL: repo.url, promise: promise, error: err, logger: logger)}
