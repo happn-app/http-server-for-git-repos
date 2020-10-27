@@ -26,6 +26,8 @@ final class RepoCloner {
 		let promise = eventLoop.makePromise(of: Void.self)
 		do {
 			var context = CustomContext()
+			context.env["PATH"] = main.env["PATH"]
+			context.currentdirectory = main.currentdirectory
 			if let credName = repo.credentialName {
 				guard let creds = config.credentials[credName] else {
 					throw SimpleError(message: "Invalid config for repo “\(repo.url)”: credential name “\(credName)” does not exist.")
