@@ -14,6 +14,7 @@ public struct ServerConfig : Decodable {
 	public struct Repo : Codable {
 		
 		public var url: URL
+		public var gitRef: String
 		public var credentialName: String?
 		
 		public var endpointPath: String
@@ -24,6 +25,8 @@ public struct ServerConfig : Decodable {
 	
 	public enum Credential : Decodable {
 		
+		/** Note: Only path containing alpha-num chars, and characters from
+		`"=/-_.+"` are allowed. */
 		case sshKey(_ path: String)
 		/* Other cases later if needed. */
 		
@@ -67,5 +70,13 @@ public struct ServerConfig : Decodable {
 	/** The path to the folder in which the repositories will be cloned. */
 	@WithDefault(DefaultBaseRepsFolderPath.self)
 	public var baseReposFolderPath: String
+	
+	public var baseReposFolderURL: URL {
+		URL(fileURLWithPath: baseReposFolderPath, isDirectory: true)
+	}
+	
+	public func localURL(for repo: Repo) -> URL {
+		return URL(fileURLWithPath: repo.relativeLocalPath ?? repo.url.lastPathComponent, relativeTo: baseReposFolderURL)
+	}
 	
 }

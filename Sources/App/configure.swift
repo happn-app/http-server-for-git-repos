@@ -16,6 +16,13 @@ public func configure(_ app: Application) throws {
 	
 	/* Fills the app’s storage; see comment in function for details. */
 	warmUpStorage(app)
+	
+	/* Config is done, we start the repos updater. */
+	/* TODO: For now we only clone once. */
+	let repoCloner = RepoCloner()
+	for repo in app.config.repos {
+		_ = repoCloner.cloneRepo(repo, app: app)
+	}
 }
 
 
@@ -26,4 +33,5 @@ private func warmUpStorage(_ app: Application) {
 	 * storage so the storage is effectively read-only later.
 	 * Must be done after the app is configured. */
 	_ = app.config /* This one is technically not needed… */
+	_ = app.gitQueue
 }

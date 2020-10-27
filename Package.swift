@@ -8,12 +8,14 @@ let package = Package(
 		.macOS(.v10_15)
 	],
 	dependencies: [
-		.package(url: "https://github.com/vapor/vapor.git", from: "4.0.0")
+		.package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
+		.package(url: "https://github.com/kareman/SwiftShell", from: "5.1.0")
 	],
 	targets: [
 		.target(
 			name: "App",
 			dependencies: [
+				.product(name: "SwiftShell", package: "SwiftShell"),
 				.product(name: "Vapor", package: "vapor")
 			],
 			swiftSettings: [
