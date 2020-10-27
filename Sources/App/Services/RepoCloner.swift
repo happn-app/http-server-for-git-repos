@@ -20,8 +20,8 @@ final class RepoCloner {
 		let logger = req?.logger ?? app.logger
 		let eventLoop = req?.eventLoop ?? app.eventLoopGroup.next()
 		
-		let repoURL = config.localURL(for: repo)
-		logger.info("Cloning or updating \(repo.url) in \(repoURL)")
+		let localRepoPath = config.localURL(for: repo).path
+		logger.info("Cloning or updating \(repo.url) in \(localRepoPath)")
 		
 		let promise = eventLoop.makePromise(of: Void.self)
 		do {
@@ -42,13 +42,13 @@ final class RepoCloner {
 				}
 			}
 			
-			if FileManager.default.fileExists(atPath: repoURL.path) && FileManager.default.enumerator(atPath: repoURL.path)?.nextObject() != nil {
+			if FileManager.default.fileExists(atPath: localRepoPath) && FileManager.default.enumerator(atPath: localRepoPath)?.nextObject() != nil {
 				/* A file or folder already exists at repo local path. We assume it
 				 * is a previous clone of the repo and we just fetch. */
 				app.gitQueue.async{
 					let err = (
-						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "-C", repoURL.path, "fetch", "-pPtf", "origin").error ??
-						self.updateLocalRepoBranch(repoURL.path, gitRef: repo.gitRef, context: context, logger: logger)
+						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "-C", localRepoPath, "fetch", "-pPtf", "origin").error ??
+						self.updateLocalRepoBranch(localRepoPath, gitRef: repo.gitRef, context: context, logger: logger)
 					)
 					if let err = err {self.failPromiseAndLog(repoURL: repo.url, promise: promise, error: err, logger: logger)}
 					else             {promise.succeed(())}
@@ -57,8 +57,8 @@ final class RepoCloner {
 				/* No file or folder at repo local path. We must clone the repo. */
 				app.gitQueue.async{
 					let err = (
-						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "clone", "--origin", "origin", repo.url, repoURL.path).error ??
-						self.updateLocalRepoBranch(repoURL.path, gitRef: repo.gitRef, context: context, logger: logger)
+						self.runAndLogStderr(context: context, logger: logger, "/usr/bin/env", "git", "clone", "--origin", "origin", repo.url, localRepoPath).error ??
+						self.updateLocalRepoBranch(localRepoPath, gitRef: repo.gitRef, context: context, logger: logger)
 					)
 					if let err = err {self.failPromiseAndLog(repoURL: repo.url, promise: promise, error: err, logger: logger)}
 					else             {promise.succeed(())}
