@@ -75,7 +75,13 @@ public struct ServerConfig : Decodable {
 	@WithDefault(DefaultPullInterval.self)
 	public var pullInterval: TimeInterval?
 	
-	private struct DefaultBaseRepsFolderPath : DefaultProvider {static let defaultValue = FileManager.default.temporaryDirectory.path}
+	private struct DefaultBaseRepsFolderPath : DefaultProvider {
+		static var defaultValue: String = {
+			let tempFolder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+			_ = try? FileManager.default.createDirectory(at: tempFolder, withIntermediateDirectories: true, attributes: nil)
+			return tempFolder.path
+		}()
+	}
 	/**
 	The path to the folder in which the repositories will be cloned.
 	
