@@ -26,8 +26,9 @@ public struct ServerConfig : Decodable {
 		If there are more than one path components, the parent folder must exist,
 		otherwise the clones will fail.
 		
-		The `/_healthz` and `/_metrics` endpoints are reserved so the repo cannot
-		be in these folders. */
+		Some `/_*` endpoints are reserved so the repo cannot be in the folders
+		that are reserved. To simplify, do not put repositories in a folder
+		starting with an underscore. */
 		public var relativePath: String?
 		
 	}
