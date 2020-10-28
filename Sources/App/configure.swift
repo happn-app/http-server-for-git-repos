@@ -20,7 +20,6 @@ public func configure(_ app: Application) throws {
 	app.repoUpdater = RepoUpdater()
 	
 	/* Register the routes */
-	// app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 	try routes(app)
 	
 	/* Fills the app’s storage; see comment in function for details. */
