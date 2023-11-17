@@ -1,6 +1,13 @@
 = http-server-for-git-repos
 François Lamboley <francois.lamboley@happn.com>
 
+---
+
+NOTE: This repo is no longer maintained by happn. +
+A maintained version is available from its creator at https://github.com/Frizlab/http-server-for-git-repos[Frizlab/http-server-for-git-repos].
+
+---
+
 Serve the files in your git repositories via HTTP.
 
 == Why?
